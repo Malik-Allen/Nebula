@@ -1,6 +1,6 @@
 # NEBULA
 
-## C++ Entity Component System
+## Entity Component System
 
 ### Quick Start
 
@@ -27,11 +27,11 @@ public:
 };
 ```
 
-Once instantiated the `World` object is responsible for creating entities and adding/removing components from entities at run-time.
+Once instantiated, the `Nebula::World` object is responsible for creating entities and adding/removing components from entities at run-time.
 
 All systems should be registered before their components are added to entities.
 
-`Parser<...>` can be used on a `World` object to obtain all entities with the matching `Component` signature, see example below:
+`Nebula::Parser<...>` can be used on a `World` object to obtain all entities with the matching `Component` signature, see example below:
 
 `Nebula::Parser<AudioComponent, PhysicsComponent>( WorldObject );`
 
