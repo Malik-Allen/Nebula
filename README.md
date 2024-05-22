@@ -1,4 +1,4 @@
-# NEBULA
+# Nebula
 
 ## Entity Component System
 
