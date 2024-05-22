@@ -1,0 +1,62 @@
+cmake_minimum_required(VERSION 3.27.2)
+
+project(Nebula)
+set(CMAKE_CXX_STANDARD 14)
+
+# Set output directories for different build configurations
+set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
+
+foreach(CONFIGURATION ${CMAKE_CONFIGURATION_TYPES})
+    string(TOUPPER ${CONFIGURATION} CONFIG)
+    set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY_${CONFIG} ${CMAKE_BINARY_DIR}/lib/${CONFIGURATION})
+    set(CMAKE_LIBRARY_OUTPUT_DIRECTORY_${CONFIG} ${CMAKE_BINARY_DIR}/lib/${CONFIGURATION})
+    set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_${CONFIG} ${CMAKE_BINARY_DIR}/bin/${CONFIGURATION})
+endforeach()
+
+# Add include directories
+include_directories(${PROJECT_SOURCE_DIR}/include)
+
+# Collect source files
+file(GLOB_RECURSE SOURCES "${PROJECT_SOURCE_DIR}/src/*.cpp")
+
+# Create the static library
+add_library(Nebula STATIC ${SOURCES})
+
+target_include_directories(Nebula PUBLIC
+                           "$<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>"
+                           "$<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>")
+target_include_directories(Nebula PRIVATE
+                           "${PROJECT_SOURCE_DIR}/src"
+                           "${CMAKE_BINARY_DIR}/src")
+
+# Define build configurations
+set_target_properties(Nebula PROPERTIES
+    ARCHIVE_OUTPUT_DIRECTORY_DEBUG ${CMAKE_BINARY_DIR}/lib/x86/Debug
+    ARCHIVE_OUTPUT_DIRECTORY_RELEASE ${CMAKE_BINARY_DIR}/lib/x86/Release
+    ARCHIVE_OUTPUT_DIRECTORY_RELWITHDEBINFO ${CMAKE_BINARY_DIR}/lib/x86/RelWithDebInfo
+    ARCHIVE_OUTPUT_DIRECTORY_MINSIZEREL ${CMAKE_BINARY_DIR}/lib/x86/MinSizeRel
+)
+
+set_target_properties(Nebula PROPERTIES
+    ARCHIVE_OUTPUT_DIRECTORY_DEBUG ${CMAKE_BINARY_DIR}/lib/x64/Debug
+    ARCHIVE_OUTPUT_DIRECTORY_RELEASE ${CMAKE_BINARY_DIR}/lib/x64/Release
+    ARCHIVE_OUTPUT_DIRECTORY_RELWITHDEBINFO ${CMAKE_BINARY_DIR}/lib/x64/RelWithDebInfo
+    ARCHIVE_OUTPUT_DIRECTORY_MINSIZEREL ${CMAKE_BINARY_DIR}/lib/x64/MinSizeRel
+)
+
+# Install targets
+install(TARGETS Nebula
+    EXPORT NebulaTargets
+    ARCHIVE DESTINATION lib
+    LIBRARY DESTINATION lib
+    RUNTIME DESTINATION bin
+)
+
+# Export the targets for other projects
+install(EXPORT NebulaTargets
+    FILE NebulaTargets.cmake
+    NAMESPACE Nebula::
+    DESTINATION lib/cmake/Nebula
+)
